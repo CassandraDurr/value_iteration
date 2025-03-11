@@ -1,3 +1,3 @@
 numpy
 pandas
-ipynkernel
+ipykernel
