@@ -6,24 +6,22 @@ import pandas as pd
 
 
 def load_mdp_from_csv(
-    transitions_filepath: str, state_actions_filepath: str
+    transitions_filepath: str,
 ) -> tuple[
     list[str], dict[str, list[str]], dict[tuple[str], float], dict[tuple[str], float]
 ]:
-    """Load the Markov Decision Process (MDP) variables from CSV files.
+    """Load the Markov Decision Process (MDP) variables from a CSV file.
 
     Create variables for states, actions, transition probabilities, and rewards.
 
     Args:
         transitions_filepath (str): Path to CSV file containing transitions
             ('state', 'action', 'next_state', 'probability', 'reward').
-        state_actions_filepath (str): Path to CSV file containing state-actions space
-            ('state', 'actions').
 
     Raises:
         ValueError: Error in reading in transitions CSV.
         ValueError: Invalid transition probabilities in transitions CSV.
-        ValueError: Error in reading in state-actions CSV.
+        ValueError: Inconsistent rewards for a state-action pair.
 
     Returns:
         tuple[
@@ -32,7 +30,7 @@ def load_mdp_from_csv(
             states: List of states.
             actions: States and corresponding possible actions.
             probabilities: Transition probabilities {(s, a, s'): prob}.
-            rewards: Rewards {(s, a, s'): reward}.
+            rewards: Rewards {(s, a): reward}.
     """
     # Read transitions CSV - enforce columns and types
     try:
@@ -63,28 +61,24 @@ def load_mdp_from_csv(
             "Probability column must contain values strictly between 0 and 1."
         )
 
-    # Read state-actions CSV - enforce columns and types
-    try:
-        state_actions_df = pd.read_csv(
-            state_actions_filepath, dtype=str, usecols=["state", "actions"]
-        )
-    except Exception as e:
-        raise ValueError(
-            f"Error reading state-actions CSV: {e}. Ensure it has columns: state, action."
-        ) from e
-
-    # Extract unique states list
-    states = list(state_actions_df["state"].unique())
+    # Extract unique states list from the transitions CSV
+    states = list(set(transitions_df["state"]).union(set(transitions_df["next_state"])))
 
     # Build actions dictionary
     actions = {}
-    for _, row in state_actions_df.iterrows():
-        # Actions should be separated by semicolons
-        actions[row["state"]] = row["actions"].split(";")
+    for _, row in transitions_df.iterrows():
+        s, a = row["state"], row["action"]
+        if s not in actions:
+            actions[s] = []
+        if a not in actions[s]:
+            actions[s].append(a)
 
     # Build transition probabilities and rewards dictionaries
     probabilities = {}
     rewards = {}
+
+    # Track unique rewards for (s, a) pairs
+    unique_reward_tracker = {}
 
     for _, row in transitions_df.iterrows():
         s, a, s_ = (
@@ -96,8 +90,17 @@ def load_mdp_from_csv(
         # Store transition probability
         probabilities[(s, a, s_)] = row["probability"]
 
-        # Store reward
-        rewards[(s, a, s_)] = row["reward"]
+        # Ensure only one unique reward per (s, a) exists
+        reward = row["reward"]
+        if (s, a) in unique_reward_tracker and unique_reward_tracker[(s, a)] != reward:
+            raise ValueError(
+                f"Inconsistent rewards for state-action pair ({s}, {a}): "
+                f"Found both {unique_reward_tracker[(s, a)]} and {reward}."
+            )
+
+        # Store the reward
+        unique_reward_tracker[(s, a)] = reward
+        rewards[(s, a)] = reward
 
     return states, actions, probabilities, rewards
 
@@ -123,7 +126,7 @@ def validate_mdp(
         ValueError: States or next states in probabilities do not exist in states.
         ValueError: Actions in probabilities are not valid for the given state.
         ValueError: Invalid probabilities in probabilities.
-        ValueError: States or next states in rewards do not exist in states.
+        ValueError: States in rewards do not exist in states.
         ValueError: Actions in rewards are not valid for the given state.
         ValueError: Rewards in rewards must be numeric.
     """
@@ -156,15 +159,15 @@ def validate_mdp(
                 f"Probability for ({s}, {a}, {s_}) must be between 0 and 1."
             )
 
-    for (s, a, s_), reward in rewards.items():
-        if s not in states or s_ not in states:
-            raise ValueError(f"State {s} or {s_} in rewards is not in states.")
+    for (s, a), reward in rewards.items():
+        if s not in states:
+            raise ValueError(f"State {s} in rewards is not in states.")
         if s in actions and a not in actions[s]:
             raise ValueError(
                 f"Action {a} in rewards is not a valid action for state {s}."
             )
         if not isinstance(reward, (int, float)):
-            raise ValueError(f"Reward for ({s}, {a}, {s_}) must be a number.")
+            raise ValueError(f"Reward for ({s}, {a}) must be a number.")
 
 
 def value_iteration(
@@ -212,7 +215,9 @@ def value_iteration(
     # Track iterations
     iteration = 0
     while True:
-        delta = 0
+        # Track changes in the value function for all states in this iteration
+        # to help determine convergence
+        delta_values = []
         iteration += 1
         new_values = values.copy()
 
@@ -225,17 +230,19 @@ def value_iteration(
             best_value = float("-inf")
 
             for a in actions[s]:
-                q_value = sum(
-                    probabilities.get((s, a, s_), 0)
-                    * (rewards.get((s, a, s_), 0) + gamma * values[s_])
-                    for s_ in states
+                q_value = rewards.get((s, a), 0) + gamma * sum(
+                    probabilities.get((s, a, s_), 0) * values[s_] for s_ in states
                 )
                 best_value = max(best_value, q_value)
 
             new_values[s] = best_value
-            delta = max(delta, abs(old_value - new_values[s]))
+            delta_values.append(abs(old_value - new_values[s]))
 
+        # Update value function
         values = new_values
+
+        # Get the maximum change in value function for convergence
+        delta = max(delta_values)
 
         if printing:
             print(f"Iteration {iteration}, max value change: {delta}")
@@ -254,11 +261,10 @@ def value_iteration(
         best_value = float("-inf")
 
         for a in actions[s]:
-            q_value = sum(
-                probabilities.get((s, a, s_), 0)
-                * (rewards.get((s, a, s_), 0) + gamma * values[s_])
-                for s_ in states
+            q_value = rewards.get((s, a), 0) + gamma * sum(
+                probabilities.get((s, a, s_), 0) * values[s_] for s_ in states
             )
+
             if q_value > best_value:
                 best_value = q_value
                 best_action = a
