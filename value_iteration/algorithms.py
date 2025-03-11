@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from mdp import MDP
+from .mdp import MDP
 
 
 def extract_policy_from_values(
