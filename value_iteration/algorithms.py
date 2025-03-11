@@ -61,7 +61,7 @@ def load_mdp_from_csv(
             "Probability column must contain values strictly between 0 and 1."
         )
 
-    # Extract unique states list from the transitions CSV
+    # Extract unique states list
     states = list(set(transitions_df["state"]).union(set(transitions_df["next_state"])))
 
     # Build actions dictionary
