@@ -37,6 +37,7 @@ repos:
       - id: pylint
         args:
         - --disable=import-error
+        - --disable=mixed-line-endings
         - --disable=too-many-arguments
         - --disable=too-many-positional-arguments
         - --disable=too-many-locals
