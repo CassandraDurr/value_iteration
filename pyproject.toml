@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "value_iteration"
+version = "1.0.0"
+maintainers = [
+  { name="Cassandra Durr", email="c.durr@lancaster.ac.uk" },
+]
+authors = [
+  { name="Cassandra Durr", email="c.durr@lancaster.ac.uk" },
+]
+dynamic=["dependencies", "optional-dependencies"]
+license={file="LICENSE"}
+description = "Value iteration algorithm for Markov Decision Processes."
+readme = "README.md"
+requires-python = ">=3.12"
+keywords=["value iteration", "Markov Decision Process", "MDP"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools.dynamic]
+dependencies={file="requirements/requirements.txt"}
+optional-dependencies={dev={file=["requirements/requirements-dev.txt"]}}
+
+[project.urls]
+"Homepage"="https://github.com/CassandraDurr/value_iteration"
+"Bug Tracker"="https://github.com/CassandraDurr/value_iteration/issues"
