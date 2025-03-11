@@ -38,7 +38,4 @@ repos:
         args:
         - --disable=import-error
         - --disable=mixed-line-endings
-        - --disable=too-many-arguments
-        - --disable=too-many-positional-arguments
-        - --disable=too-many-locals
         - --output-format=colorized
