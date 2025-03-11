@@ -1,0 +1,4 @@
+state,action,next_state,probability,reward
+S1,A1,S2,0.8,5
+S1,A1,S3,0.2,5
+S2,A2,S1,1.0,10
