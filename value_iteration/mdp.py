@@ -115,19 +115,11 @@ class MDP:
     probabilities: dict[tuple[Any, Any, Any], float]
     rewards: dict[tuple[Any, Any], float | int]
 
-    def validate(self) -> None:
-        """Validate MDP variables.
+    def validate_types(self) -> None:
+        """Validate that the types of each MDP variable is as expected.
 
         Raises:
-            ValueError: states must be a list; actions, probabilities, rewards must be dictionaries.
-            ValueError: States from actions do not exist in the state list states.
-            ValueError: Actions for states in actions must be in a list.
-            ValueError: States or next states in probabilities do not exist in states.
-            ValueError: Actions in probabilities are not valid for the given state.
-            ValueError: Invalid probabilities in probabilities.
-            ValueError: States in rewards do not exist in states.
-            ValueError: Actions in rewards are not valid for the given state.
-            ValueError: Rewards in rewards must be numeric.
+            ValueError: States should be lists, the rest should be dictionaries.
         """
         # Validate variable types
         if (
@@ -140,15 +132,43 @@ class MDP:
                 "states must be a list & actions, probabilities, rewards must be dictionaries."
             )
 
+    def validate_actions(self) -> None:
+        """Validate that the actions variable is as expected.
+
+        Raises:
+            ValueError: A state exists in actions which is not in states.
+            ValueError: The actions per state should be stored as a list.
+        """
         # Validate actions
+        valid_state_actions = []
         for state, state_actions in self.actions.items():
             if state not in self.states:
                 raise ValueError(f"State {state} in actions does not exist in states.")
             if not isinstance(state_actions, list):
                 raise ValueError(f"Actions for state {state} must be in a list.")
+            valid_state_actions.append((state, action) for action in state_actions)
 
+    def validate_probabilities(self) -> None:
+        """Validate the transitions probability dictionary is as expected.
+
+        Raises:
+            ValueError: The current or next state does not exist in the states list.
+            ValueError: A (s,a) pair has probability >0 when it is not in actions dict.
+            ValueError: Non-numeric probability or probability not in range [0,1].
+            ValueError: Probability for valid state-action pair doesn't sum to 1.
+        """
         # Validate transition probabilities
+
+        # Get valid state-action pairs to check if probabilies sum to 1
+        valid_state_actions = []
+        for state, state_actions in self.actions.items():
+            valid_state_actions.append((state, action) for action in state_actions)
+
+        # Track the sum of probabilities per valid state-action pair
+        cumulative_probabilities = dict.fromkeys(valid_state_actions, 0.0)
+
         for (s, a, s_), prob in self.probabilities.items():
+            cumulative_probabilities[(s, a)] += prob
             if s not in self.states or s_ not in self.states:
                 raise ValueError(
                     f"State {s} or {s_} in probabilities is not in states."
@@ -162,6 +182,20 @@ class MDP:
                     f"Probability for ({s}, {a}, {s_}) must be between 0 and 1."
                 )
 
+        for key, prob in cumulative_probabilities.items():
+            if (prob > 1 + 1e-9) or (prob < 1 - 1e-9):
+                raise ValueError(
+                    f"Probability for state-action pair {key} should add to 1, not {prob}."
+                )
+
+    def validate_rewards(self) -> None:
+        """Validate the rewards dictionary is as expected.
+
+        Raises:
+            ValueError: The state in rewards does not exist in the states list.
+            ValueError: A (s,a) pair has a rewards when it is not in actions dict.
+            ValueError: The reward is non-numeric.
+        """
         # Validate rewards
         for (s, a), reward in self.rewards.items():
             if s not in self.states:
@@ -175,4 +209,7 @@ class MDP:
 
     def __post_init__(self):
         """Automatically validate MDP on data class creation."""
-        self.validate()
+        self.validate_types()
+        self.validate_actions()
+        self.validate_probabilities()
+        self.validate_rewards()
