@@ -133,77 +133,90 @@ class MDP:
             )
 
     def validate_actions(self) -> None:
-        """Validate that the actions variable is as expected.
+        """Validate that the actions dictionary is as expected.
 
         Raises:
-            ValueError: A state exists in actions which is not in states.
+            ValueError: Some states exists in actions which are invalid.
             ValueError: The actions per state should be stored as a list.
         """
-        # Validate actions
-        valid_state_actions = []
-        for state, state_actions in self.actions.items():
-            if state not in self.states:
-                raise ValueError(f"State {state} in actions does not exist in states.")
-            if not isinstance(state_actions, list):
-                raise ValueError(f"Actions for state {state} must be in a list.")
-            valid_state_actions.append((state, action) for action in state_actions)
+        # Ensure every state in actions exists in states
+        if any(state not in self.states for state in self.actions):
+            raise ValueError("Some states in actions are not in states.")
+
+        # Ensure actions are lists
+        if any(
+            not isinstance(action_list, list) for action_list in self.actions.values()
+        ):
+            raise ValueError("Actions for each state must be stored as a list.")
 
     def validate_probabilities(self) -> None:
         """Validate the transitions probability dictionary is as expected.
 
         Raises:
-            ValueError: The current or next state does not exist in the states list.
-            ValueError: A (s,a) pair has probability >0 when it is not in actions dict.
+            ValueError: The current or next state is invalid.
+            ValueError: An invalid (s,a) pair has non-zero probability.
             ValueError: Non-numeric probability or probability not in range [0,1].
             ValueError: Probability for valid state-action pair doesn't sum to 1.
         """
-        # Validate transition probabilities
-
         # Get valid state-action pairs to check if probabilies sum to 1
-        valid_state_actions = []
-        for state, state_actions in self.actions.items():
-            valid_state_actions.append((state, action) for action in state_actions)
+        valid_state_actions = {
+            (state, action)
+            for state, actions in self.actions.items()
+            for action in actions
+        }
 
         # Track the sum of probabilities per valid state-action pair
         cumulative_probabilities = dict.fromkeys(valid_state_actions, 0.0)
 
         for (s, a, s_), prob in self.probabilities.items():
-            cumulative_probabilities[(s, a)] += prob
+            # Ensure current and next states exist
             if s not in self.states or s_ not in self.states:
                 raise ValueError(
                     f"State {s} or {s_} in probabilities is not in states."
                 )
+
+            # Ensure (state, action) pairs are valid
             if s in self.actions and a not in self.actions[s]:
                 raise ValueError(
-                    f"Action {a} in probabilities is not a valid action for state {s}."
+                    f"Invalid state-action pair ({s}, {a}) in transition probabilities."
                 )
+
+            # Ensure valid probabilities
             if not isinstance(prob, (int, float)) or prob < 0 or prob > 1:
                 raise ValueError(
                     f"Probability for ({s}, {a}, {s_}) must be between 0 and 1."
                 )
 
-        for key, prob in cumulative_probabilities.items():
-            if (prob > 1 + 1e-9) or (prob < 1 - 1e-9):
+            cumulative_probabilities[(s, a)] += prob
+
+        # Ensure all valid (state, action) probabilities sum to 1
+        for (s, a), total_prob in cumulative_probabilities.items():
+            if (total_prob <= 1 - 1e-9) or (total_prob >= 1 + 1e-9):
                 raise ValueError(
-                    f"Probability for state-action pair {key} should add to 1, not {prob}."
+                    f"Total probability for ({s}, {a}) must sum to 1, found {total_prob}."
                 )
 
     def validate_rewards(self) -> None:
         """Validate the rewards dictionary is as expected.
 
         Raises:
-            ValueError: The state in rewards does not exist in the states list.
-            ValueError: A (s,a) pair has a rewards when it is not in actions dict.
+            ValueError: The state in rewards is invalid.
+            ValueError: An invalid (s,a) pair has a reward.
             ValueError: The reward is non-numeric.
         """
         # Validate rewards
         for (s, a), reward in self.rewards.items():
+            # Ensure states exist
             if s not in self.states:
                 raise ValueError(f"State {s} in rewards is not in states.")
+
+            # Ensure (state, action) pairs are valid
             if s in self.actions and a not in self.actions[s]:
                 raise ValueError(
-                    f"Action {a} in rewards is not a valid action for state {s}."
+                    f"Invalid state-action pair ({s}, {a}) in transition probabilities."
                 )
+
+            # Ensure numeric rewards
             if not isinstance(reward, (int, float)):
                 raise ValueError(f"Reward for ({s}, {a}) must be a number.")
 
