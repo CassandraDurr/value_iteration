@@ -39,3 +39,4 @@ repos:
         - --disable=import-error
         - --disable=mixed-line-endings
         - --output-format=colorized
+        - --ignore-patterns=test.*
