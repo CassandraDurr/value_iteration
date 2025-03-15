@@ -66,6 +66,11 @@ class ValueIteration:
         # Extract policy
         policy = {}
         for s in self.mdp.states:
+            # If no actions exist for s, assign None in policy
+            if (s not in self.mdp.actions) or (not self.mdp.actions[s]):
+                policy[s] = None
+                continue
+
             # Initialise best action and value for state
             best_action = None
             best_value = float("-inf")
@@ -191,8 +196,17 @@ class AsynchValueIteration(ValueIteration):
             * (
                 self.mdp.rewards.get((s, a, s_), 0)
                 + self.gamma
-                * max(
-                    self.q_table.get((s_, a_), 0) for a_ in self.mdp.actions.get(s_, [])
+                * (
+                    max(
+                        [
+                            self.q_table.get((s_, a_), 0)
+                            for a_ in self.mdp.actions.get(s_, [])
+                        ]
+                        if self.mdp.actions.get(
+                            s_, []
+                        )  # Check if there are valid actions
+                        else [0]  # Default to 0 if there are no available actions
+                    )
                 )
             )
             for s_ in self.mdp.states
