@@ -7,7 +7,7 @@ from value_iteration import MDP
 valid_S = ["S1", "S3", "S2"]
 valid_A = {"S1": ["A1"], "S2": ["A2"]}
 valid_P = {("S1", "A1", "S2"): 0.8, ("S1", "A1", "S3"): 0.2, ("S2", "A2", "S1"): 1.0}
-valid_R = {("S1", "A1"): 5, ("S2", "A2"): 10}
+valid_R = {("S1", "A1", "S2"): 5, ("S1", "A1", "S3"): 5, ("S2", "A2", "S1"): 10}
 
 
 @pytest.mark.parametrize(

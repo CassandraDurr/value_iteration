@@ -20,8 +20,9 @@ def test_load_valid_mdp():
     assert probabilities[("S1", "A1", "S2")] == 0.8
     assert probabilities[("S1", "A1", "S3")] == 0.2
     assert probabilities[("S2", "A2", "S1")] == 1.0
-    assert rewards[("S1", "A1")] == 5
-    assert rewards[("S2", "A2")] == 10
+    assert rewards[("S1", "A1", "S2")] == 5
+    assert rewards[("S1", "A1", "S3")] == 5
+    assert rewards[("S2", "A2", "S1")] == 10
 
 
 def test_load_invalid_column_names():
@@ -45,11 +46,4 @@ def test_invalid_probability_values():
         ValueError,
         match="Probability column must contain values strictly between 0 and 1",
     ):
-        load_mdp_from_csv(testing_csv)
-
-
-def test_inconsistent_rewards():
-    """Test a MDP configuration where a state-action pair has inconsistent rewards."""
-    testing_csv = os.path.join(TEST_DATA_DIR, "inconsistent_rewards.csv")
-    with pytest.raises(ValueError, match="Inconsistent rewards for state-action pair"):
         load_mdp_from_csv(testing_csv)

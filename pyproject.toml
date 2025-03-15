@@ -35,3 +35,8 @@ optional-dependencies={dev={file=["requirements/requirements-dev.txt"]}}
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+pythonpath = ["."]
+addopts = "--strict-markers"

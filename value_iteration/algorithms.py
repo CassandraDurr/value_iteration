@@ -51,8 +51,9 @@ class ValueIteration:
         Returns:
             float: Q-value.
         """
-        return self.mdp.rewards.get((s, a), 0) + self.gamma * sum(
-            self.mdp.probabilities.get((s, a, s_), 0) * self.values[s_]
+        return sum(
+            self.mdp.probabilities.get((s, a, s_), 0)
+            * (self.mdp.rewards.get((s, a, s_), 0) + self.gamma * self.values[s_])
             for s_ in self.mdp.states
         )
 
@@ -185,9 +186,15 @@ class AsynchValueIteration(ValueIteration):
             s (Any): State of the MDP.
             a (Any): Action taken at state.
         """
-        self.q_table[(s, a)] = self.mdp.rewards.get((s, a), 0) + self.gamma * sum(
+        self.q_table[(s, a)] = sum(
             self.mdp.probabilities.get((s, a, s_), 0)
-            * max(self.q_table.get((s_, a_), 0) for a_ in self.mdp.actions.get(s_, []))
+            * (
+                self.mdp.rewards.get((s, a, s_), 0)
+                + self.gamma
+                * max(
+                    self.q_table.get((s_, a_), 0) for a_ in self.mdp.actions.get(s_, [])
+                )
+            )
             for s_ in self.mdp.states
         )
 

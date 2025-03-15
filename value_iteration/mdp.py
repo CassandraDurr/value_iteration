@@ -22,7 +22,6 @@ def load_mdp_from_csv(
     Raises:
         ValueError: Error in reading in the transitions CSV.
         ValueError: Invalid transition probabilities in the transitions CSV.
-        ValueError: Inconsistent rewards for a state-action pair.
 
     Returns:
         tuple[
@@ -31,7 +30,7 @@ def load_mdp_from_csv(
             states: List of states.
             actions: States and corresponding possible actions.
             probabilities: Transition probabilities {(s, a, s'): prob}.
-            rewards: Rewards {(s, a): reward}.
+            rewards: Rewards {(s, a, s'): reward}.
     """
     # Read transitions CSV forcing column names and types
     try:
@@ -78,9 +77,6 @@ def load_mdp_from_csv(
     probabilities = {}
     rewards = {}
 
-    # Track unique rewards for (s, a) pairs
-    unique_reward_tracker = {}
-
     for _, row in transitions_df.iterrows():
         s, a, s_ = (
             row["state"],
@@ -91,17 +87,8 @@ def load_mdp_from_csv(
         # Store transition probability
         probabilities[(s, a, s_)] = row["probability"]
 
-        # Ensure only one unique reward per (s, a) exists
-        reward = row["reward"]
-        if (s, a) in unique_reward_tracker and unique_reward_tracker[(s, a)] != reward:
-            raise ValueError(
-                f"Inconsistent rewards for state-action pair ({s}, {a}): "
-                f"Found both {unique_reward_tracker[(s, a)]} and {reward}."
-            )
-
         # Store the reward
-        unique_reward_tracker[(s, a)] = reward
-        rewards[(s, a)] = reward
+        rewards[(s, a, s_)] = row["reward"]
 
     return states, actions, probabilities, rewards
 
@@ -113,7 +100,7 @@ class MDP:
     states: list
     actions: dict[Any, list[Any]]
     probabilities: dict[tuple[Any, Any, Any], float]
-    rewards: dict[tuple[Any, Any], float | int]
+    rewards: dict[tuple[Any, Any, Any], float | int]
 
     def validate_types(self) -> None:
         """Validate that the types of each MDP variable is as expected.
@@ -200,15 +187,15 @@ class MDP:
         """Validate the rewards dictionary is as expected.
 
         Raises:
-            ValueError: The state in rewards is invalid.
+            ValueError: The state or next state in rewards is invalid.
             ValueError: An invalid (s,a) pair has a reward.
             ValueError: The reward is non-numeric.
         """
         # Validate rewards
-        for (s, a), reward in self.rewards.items():
+        for (s, a, s_), reward in self.rewards.items():
             # Ensure states exist
-            if s not in self.states:
-                raise ValueError(f"State {s} in rewards is not in states.")
+            if s not in self.states or s_ not in self.states:
+                raise ValueError(f"State {s} or {s_} in rewards is not in states.")
 
             # Ensure (state, action) pairs are valid
             if s in self.actions and a not in self.actions[s]:
