@@ -411,22 +411,31 @@
 
 <p>Create variables for states, actions, transition probabilities, and rewards.</p>
 
-<p>Args:
-    transitions_filepath (str): Path to the CSV containing transition information
-        ('state', 'action', 'next_state', 'probability', 'reward').</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Raises:
-    ValueError: Error in reading in the transitions CSV.
-    ValueError: Invalid transition probabilities in the transitions CSV.</p>
+<ul>
+<li><strong>transitions_filepath (str):</strong>  Path to the CSV containing transition information
+('state', 'action', 'next_state', 'probability', 'reward').</li>
+</ul>
 
-<p>Returns:
-    tuple[
-        list[str], dict[str, list[str]], dict[tuple[str], float], dict[tuple[str], float]
-    ]: states, actions, probabilities, rewards
-        states: List of states.
-        actions: States and corresponding possible actions.
-        probabilities: Transition probabilities {(s, a, s'): prob}.
-        rewards: Rewards {(s, a, s'): reward}.</p>
+<h6 id="raises">Raises:</h6>
+
+<ul>
+<li><strong>ValueError:</strong>  Error in reading in the transitions CSV.</li>
+<li><strong>ValueError:</strong>  Invalid transition probabilities in the transitions CSV.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>tuple[
+      list[str], dict[str, list[str]], dict[tuple[str], float], dict[tuple[str], float]
+  ]: states, actions, probabilities, rewards
+      states: List of states.
+      actions: States and corresponding possible actions.
+      probabilities: Transition probabilities {(s, a, s'): prob}.
+      rewards: Rewards {(s, a, s'): reward}.</p>
+</blockquote>
 </div>
 
 
@@ -658,8 +667,11 @@
 
             <div class="docstring"><p>Validate that the types of each MDP variable is as expected.</p>
 
-<p>Raises:
-    ValueError: States should be lists, the rest should be dictionaries.</p>
+<h6 id="raises">Raises:</h6>
+
+<ul>
+<li><strong>ValueError:</strong>  States should be lists, the rest should be dictionaries.</li>
+</ul>
 </div>
 
 
@@ -696,9 +708,12 @@
 
             <div class="docstring"><p>Validate that the actions dictionary is as expected.</p>
 
-<p>Raises:
-    ValueError: Some states exists in actions which are invalid.
-    ValueError: The actions per state should be stored as a list.</p>
+<h6 id="raises">Raises:</h6>
+
+<ul>
+<li><strong>ValueError:</strong>  Some states exists in actions which are invalid.</li>
+<li><strong>ValueError:</strong>  The actions per state should be stored as a list.</li>
+</ul>
 </div>
 
 
@@ -765,11 +780,14 @@
 
             <div class="docstring"><p>Validate the transitions probability dictionary is as expected.</p>
 
-<p>Raises:
-    ValueError: The current or next state is invalid.
-    ValueError: An invalid (s,a) pair has non-zero probability.
-    ValueError: Non-numeric probability or probability not in range [0,1].
-    ValueError: Probability for valid state-action pair doesn't sum to 1.</p>
+<h6 id="raises">Raises:</h6>
+
+<ul>
+<li><strong>ValueError:</strong>  The current or next state is invalid.</li>
+<li><strong>ValueError:</strong>  An invalid (s,a) pair has non-zero probability.</li>
+<li><strong>ValueError:</strong>  Non-numeric probability or probability not in range [0,1].</li>
+<li><strong>ValueError:</strong>  Probability for valid state-action pair doesn't sum to 1.</li>
+</ul>
 </div>
 
 
@@ -813,10 +831,13 @@
 
             <div class="docstring"><p>Validate the rewards dictionary is as expected.</p>
 
-<p>Raises:
-    ValueError: The state or next state in rewards is invalid.
-    ValueError: An invalid (s,a) pair has a reward.
-    ValueError: The reward is non-numeric.</p>
+<h6 id="raises">Raises:</h6>
+
+<ul>
+<li><strong>ValueError:</strong>  The state or next state in rewards is invalid.</li>
+<li><strong>ValueError:</strong>  An invalid (s,a) pair has a reward.</li>
+<li><strong>ValueError:</strong>  The reward is non-numeric.</li>
+</ul>
 </div>
 
 

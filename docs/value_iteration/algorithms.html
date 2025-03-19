@@ -570,15 +570,21 @@
 
             <div class="docstring"><p>Initialise the value iteration class performing synchronous value iteration.</p>
 
-<p>Args:
-    mdp (MDP): Data class containing states, actions, rewards and probabilities.
-    gamma (float, optional): Discount factor. Defaults to 0.9.
-    theta (float, optional): Convergence threshold. Defaults to 1e-6.
-    printing (bool, optional): If True, prints out iteration updates. Defaults to False.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Raises:
-    ValueError: Parameter for gamma is not between 0 and 1.
-    ValueError: Parameter for theta is negative.</p>
+<ul>
+<li><strong>mdp (MDP):</strong>  Data class containing states, actions, rewards and probabilities.</li>
+<li><strong>gamma (float, optional):</strong>  Discount factor. Defaults to 0.9.</li>
+<li><strong>theta (float, optional):</strong>  Convergence threshold. Defaults to 1e-6.</li>
+<li><strong>printing (bool, optional):</strong>  If True, prints out iteration updates. Defaults to False.</li>
+</ul>
+
+<h6 id="raises">Raises:</h6>
+
+<ul>
+<li><strong>ValueError:</strong>  Parameter for gamma is not between 0 and 1.</li>
+<li><strong>ValueError:</strong>  Parameter for theta is negative.</li>
+</ul>
 </div>
 
 
@@ -670,13 +676,19 @@
 
             <div class="docstring"><p>Get the Q-value of a state-action pair (s,a) given the value function.</p>
 
-<p>Args:
-    s (Any): State of the MDP.
-    a (Any): Action taken at state.
-    values (dict[Any, float]): Value function of states.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    float: Q-value.</p>
+<ul>
+<li><strong>s (Any):</strong>  State of the MDP.</li>
+<li><strong>a (Any):</strong>  Action taken at state.</li>
+<li><strong>values (dict[Any, float]):</strong>  Value function of states.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>float: Q-value.</p>
+</blockquote>
 </div>
 
 
@@ -725,8 +737,11 @@
 
             <div class="docstring"><p>Given MDP return the optimal policy.</p>
 
-<p>Returns:
-    dict: Optimal policy - mapping of states to best action.</p>
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>dict: Optimal policy - mapping of states to best action.</p>
+</blockquote>
 </div>
 
 
@@ -798,10 +813,13 @@
 
             <div class="docstring"><p>Perform synchronous value iteration.</p>
 
-<p>Returns:
-    tuple[dict[Any, float], dict]: Optimal values, Optimal policy
-        Optimal values: Mapping of states to the optimal state value
-        Optimal policy: Mapping of states to the best action to take in that state</p>
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>tuple[dict[Any, float], dict]: Optimal values, Optimal policy
+      Optimal values: Mapping of states to the optimal state value
+      Optimal policy: Mapping of states to the best action to take in that state</p>
+</blockquote>
 </div>
 
 
@@ -987,13 +1005,16 @@
 
             <div class="docstring"><p>Initialise the value iteration class performing asynchronous value iteration.</p>
 
-<p>Args:
-    mdp (MDP): Data class containing states, actions, rewards and probabilities.
-    gamma (float, optional): Discount factor. Defaults to 0.9.
-    theta (float, optional): Convergence threshold. Defaults to 1e-6.
-    printing (bool, optional): If True, prints out iteration updates. Defaults to False.
-    n (int, optional): Convergence parameter for the number of prior iterations to consider.
-        Defaults to 10.</p>
+<h6 id="arguments">Arguments:</h6>
+
+<ul>
+<li><strong>mdp (MDP):</strong>  Data class containing states, actions, rewards and probabilities.</li>
+<li><strong>gamma (float, optional):</strong>  Discount factor. Defaults to 0.9.</li>
+<li><strong>theta (float, optional):</strong>  Convergence threshold. Defaults to 1e-6.</li>
+<li><strong>printing (bool, optional):</strong>  If True, prints out iteration updates. Defaults to False.</li>
+<li><strong>n (int, optional):</strong>  Convergence parameter for the number of prior iterations to consider.
+Defaults to 10.</li>
+</ul>
 </div>
 
 
@@ -1058,12 +1079,18 @@
 
             <div class="docstring"><p>Get the Q-value of a state-action pair (s,a).</p>
 
-<p>Args:
-    s (Any): State of the MDP.
-    a (Any): Action taken at state.</p>
+<h6 id="arguments">Arguments:</h6>
 
-<p>Returns:
-    float: Q-value.</p>
+<ul>
+<li><strong>s (Any):</strong>  State of the MDP.</li>
+<li><strong>a (Any):</strong>  Action taken at state.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>float: Q-value.</p>
+</blockquote>
 </div>
 
 
@@ -1111,9 +1138,12 @@
 
             <div class="docstring"><p>Update the Q-value for state s and action a.</p>
 
-<p>Args:
-    s (Any): State of the MDP.
-    a (Any): Action taken at state.</p>
+<h6 id="arguments">Arguments:</h6>
+
+<ul>
+<li><strong>s (Any):</strong>  State of the MDP.</li>
+<li><strong>a (Any):</strong>  Action taken at state.</li>
+</ul>
 </div>
 
 
