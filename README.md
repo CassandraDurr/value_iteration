@@ -35,10 +35,12 @@ pip install -r requirements/requirements-dev.txt
 These are the development requirements of the package and include tools for testing, code formatting and quality checking.
 
 ## Example usage 🎮
-An example of how to use this package can be found in the `examples` folder in the Jupyter notebook: `simple_value_iteration_example.ipynb`. This example shows how to install and use the package with a simple example. The functionality demonstrated in this file includes:
+A **simple** example of how to use this package can be found in the `examples` folder in the notebook: `simple_value_iteration_example.ipynb`. This example shows how to install and use the package with a simple example. The functionality demonstrated in this file includes:
 - Using **synchronous** value iteration to find the optimal policy and optimal value function using Python inputs.
 - Using **asynchronous** value iteration to find the optimal policy and optimal state-action values (Q-table) using Python inputs.
 - Running value iteration using CSV input for a more user-friendly experience. This code can also be modified with minimal changes to perform asynchronous value iteration instead of synchronous value iteration.
+
+A more **complex** example of this package's utility can be found in the `examples` folder in the notebook: `tower_of_hanoi.ipynb`. This example solves the [Tower of Hanoi puzzle](https://en.wikipedia.org/wiki/Tower_of_Hanoi) using value iteration. A large part of the problem is setting up the Markov Decision Process (MDP) for this puzzle.
 
 ## Documentation 📚
 Each Python file has its own documentation and commentary, but for ease of use, information about each function can be found at website https://cassandradurr.github.io/value_iteration/ hosted on GitHub pages.
