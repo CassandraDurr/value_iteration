@@ -1,6 +1,6 @@
 # Value Iteration Algorithm
 
-This package provides value iteration algorithms for determining the optimal policy and state values for a given Markov Decision Process (MDP). It includes implementations of both **synchronous** and **asynchronous** value iteration.
+This package provides great value iteration algorithms for determining the optimal policy and state values for a given Markov Decision Process (MDP). It includes implementations of both **synchronous** and **asynchronous** value iteration.
 
 - **Synchronous Value Iteration:** Updates all state values simultaneously in each iteration.
 - **Asynchronous Value Iteration:** Updates state values individually and asynchronously.
